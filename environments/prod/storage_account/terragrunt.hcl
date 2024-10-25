@@ -8,7 +8,7 @@ dependency "resource_group" {
 }
 
 terraform {
-  source = "../../../modules/storage_account"
+  source = "../../../cloud/azure/modules/storage_account"
 }
 
 inputs = {
