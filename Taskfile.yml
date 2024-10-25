@@ -1,0 +1,32 @@
+version: 3
+
+tasks:
+  # Navigate to the root folder of the repo
+  init-all:
+    desc: "Terragrunt init"
+    cmds:
+      - terragrunt run-all init -reconfigure
+
+  plan-all:
+    desc: "Terragrunt run-all plan"
+    cmds:
+      - terragrunt run-all plan
+
+  apply-all:
+    desc: "Terragrunt run-all apply"
+    cmds:
+      - terragrunt run-all apply -auto-approve --terragrunt-non-interactive
+  
+  destroy-all:
+    desc: "Terragrunt run-all destroy"
+    cmds:
+      - terragrunt run-all destroy -auto-approve --terragrunt-non-interactive
+
+  git-push:
+    desc: Git Add, Commit and Push
+    cmds:
+      - git status
+      - git add .
+      - git commit -m "{{.CLI_ARGS}}"
+      - git push    
+    

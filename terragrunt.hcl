@@ -4,7 +4,7 @@ remote_state {
   config = {
     resource_group_name = "terraform-backend"
     storage_account_name = "cloudutsuktfstatestgacc"
-    container_name = "terraformstate"
+    container_name = "terragrunt"
     key            = "${path_relative_to_include()}/terraform.tfstate"
   }
 }

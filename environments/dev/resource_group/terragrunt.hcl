@@ -2,12 +2,22 @@ include {
   path = find_in_parent_folders()
 }
 
+
 # Resource Group module
 terraform {
-  source = "../../../modules/resource_group"
+  source = "../../../cloud/azure/modules/resource_group"
 }
 
 inputs = {
-  name     = "dev-resource-group"
-  location = "centralindia"
+  resource_groups = {
+    "dev-terragrunt-rg-01" = "centralindia"
+  }
+  
+  tags = {
+    "dev-terragrunt-rg-01" = {
+      "Owner": "Cloudutsuk",
+      "Application": "Terragrunt",
+      "CreatedBy": "Sakharam Shinde"
+    }
+  }
 }
