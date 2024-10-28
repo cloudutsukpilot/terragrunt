@@ -1,0 +1,17 @@
+resource_groups:
+  - name: prod-terragrunt-rg-01
+    location: centralindia
+    resource_tags: 
+      Application: Terragrunt
+  - name: prod-terragrunt-rg-02
+    location: centralindia
+    resource_tags: 
+      Application: Terragrunt
+storage_accounts:
+  - name: cldprodrgtgstgacc01
+    resource_group_name: prod-terragrunt-rg-01
+    location: centralindia
+    account_tier: Standard
+    account_replication_type: LRS
+    resource_tags:
+      Application: Terragrunt
