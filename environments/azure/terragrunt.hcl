@@ -4,6 +4,7 @@ generate "provider" {
         if_exists = "overwrite_terragrunt"
         contents = <<EOF
         terraform {
+        required_version = ">= 1.9.8"
         required_providers {
             azurerm = {
             source  = "hashicorp/azurerm"
@@ -32,4 +33,12 @@ terraform {
   }
 }
 EOF
+}
+
+
+terraform {
+    before_hook "tflint" {
+        commands     = ["init","plan"]
+        execute      = ["tflint"]
+    }
 }

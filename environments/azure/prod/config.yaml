@@ -1,3 +1,7 @@
+common_tags:
+  Owner: Cloudutsuk
+  Environment: Production
+  CreatedBy: Sakharam Shinde
 resource_groups:
   - name: prod-terragrunt-rg-01
     location: centralindia
@@ -10,6 +14,13 @@ resource_groups:
 storage_accounts:
   - name: cldprodrgtgstgacc01
     resource_group_name: prod-terragrunt-rg-01
+    location: centralindia
+    account_tier: Standard
+    account_replication_type: LRS
+    resource_tags:
+      Application: Terragrunt
+  - name: cldprodrgtgstgacc02
+    resource_group_name: prod-terragrunt-rg-02
     location: centralindia
     account_tier: Standard
     account_replication_type: LRS

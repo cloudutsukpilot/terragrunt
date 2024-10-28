@@ -1,3 +1,7 @@
+common_tags:
+  Owner: Cloudutsuk
+  Environment: Development
+  CreatedBy: Sakharam Shinde
 resource_groups:
   - name: dev-terragrunt-rg-01
     location: centralindia
