@@ -4,11 +4,14 @@ locals {
   config = yamldecode(file(find_in_parent_folders("config.yaml")))
   env_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
   env_name = local.env_vars.locals.env
+
+  common_vars = yamldecode(file(find_in_parent_folders("common_vars.yaml")))
+  common_tags = local.common_vars.common_tags
 }
 
 # Storage Account module
 terraform {
-  source = "../../../../cloud/azure/modules/storage_account"
+  source = "../../../../../cloud/azure/modules/storage_account"
 }
 
 # Create resource group first
@@ -26,7 +29,7 @@ inputs = {
       location                  = storage_acc.location
       account_tier              = storage_acc.account_tier
       account_replication_type  = storage_acc.account_replication_type
-      tags                      = merge(local.config.common_tags, storage_acc.resource_tags)
+      tags                      = merge(local.common_tags, storage_acc.resource_tags)
     }
   }
 }

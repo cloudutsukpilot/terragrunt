@@ -1,8 +1,9 @@
-# environments/azure/dev/storage_account/terragrunt.hcl
+# environments/azure/dev/terragrunt.hcl
 
 include "root" {
   path = find_in_parent_folders()
 }
+ 
 
 # Include the centralized configuration
 include "storage_account" {

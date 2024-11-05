@@ -1,0 +1,5 @@
+resource_groups:
+  - name: common-backstageapp-rg-01
+    location: centralindia
+    resource_tags: 
+      Application: BackstageApp
