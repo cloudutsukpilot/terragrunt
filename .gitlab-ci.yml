@@ -15,6 +15,9 @@ variables:
 before_script:
   # Install necessary tools for Terraform and Terragrunt
   - apt-get update && apt-get install -y curl unzip bash
+  - curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+  - echo "Installed Azure CLI:"
+  - az version
   # Install Terraform
   - echo "$TERRAFORM_VERSION"
   - curl -fsSL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform.zip
