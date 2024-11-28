@@ -1,3 +1,5 @@
+image: ruby:3.1
+
 stages:
   - validate
   - init
@@ -10,12 +12,12 @@ variables:
   TERRAGRUNT_PLAN_FILE: "terragrunt-plan"
 
 before_script:
-  # Install dependencies (Terraform and Terragrunt)
-  - apk add --no-cache curl unzip bash
+  # Install necessary tools for Terraform and Terragrunt
+  - apt-get update && apt-get install -y curl unzip bash
   - curl -fsSL https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip -o terraform.zip
   - unzip terraform.zip -d /usr/local/bin/
   - rm terraform.zip
-  - curl -L https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64 -o /usr/local/bin/terragrunt
+  - curl -L https://github.com/gruntwork-io/terragrunt/releases/download/v0.50.0/terragrunt_linux_amd64 -o /usr/local/bin/terragrunt
   - chmod +x /usr/local/bin/terragrunt
   - terragrunt --version
 
