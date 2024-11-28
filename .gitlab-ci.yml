@@ -5,15 +5,14 @@ stages:
 
 before_script:
     # Update packages and install dependencies
-    - apt-get update && apt-get install -y curl unzip bash apt-transport-https ca-certificates gnupg lsb-release
+    - | 
+      apt-get update && apt-get install -y curl unzip bash apt-transport-https ca-certificates gnupg lsb-release
 
     # Install Azure CLI
-    - curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-    - echo "Installed Azure CLI:"
-    - az version
-
-    # Print Terraform version
-    - echo "Terraform version to be installed: ${TERRAFORM_VERSION}"
+    - | 
+      curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+      echo "Installed Azure CLI:"
+      az version
     
     # Install Terraform
     - |
@@ -28,9 +27,6 @@ before_script:
       else
         echo "Terraform already installed."
       fi
-
-    # Print Terragrunt version
-    - echo "Terragrunt version to be installed: ${TERRAGRUNT_VERSION}"
     
     # Install Terragrunt
     - |
@@ -45,7 +41,7 @@ before_script:
         echo "Terragrunt already installed."
       fi
        
-      # Set Azure environment variables for Terraform
+    # Set Azure environment variables for Terraform
     - | 
       export ARM_CLIENT_ID=${ARM_CLIENT_ID}
       export ARM_CLIENT_SECRET=${ARM_CLIENT_SECRET}
