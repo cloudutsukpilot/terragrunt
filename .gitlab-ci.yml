@@ -31,14 +31,12 @@ before_script:
   - terragrunt --version
 
 validate:
-  stage: validate
   script:
     - | 
       terragrunt hclfmt # Ensure HCL formatting is correct
       terragrunt validate-all
 
 init:
-  stage: init
   script:
     - cd $TF_WORKING_DIR
     - | 
@@ -49,7 +47,6 @@ init:
       terragrunt run-all init
 
 plan:
-  stage: plan
   script:
     - cd $TF_WORKING_DIR
     - | 
@@ -65,7 +62,6 @@ plan:
 
 
 apply:
-  stage: apply
   script:
     - cd $TF_WORKING_DIR
     - | 
@@ -74,5 +70,4 @@ apply:
       export ARM_TENANT_ID=${ARM_TENANT_ID}
       export ARM_SUBSCRIPTION_ID=${ARM_SUBSCRIPTION_ID}
       terragrunt run-all apply --terragrunt-non-interactive --terragrunt-out-dir /tmp/tfplan
-  only:
-    - main # Restrict apply to specific branches
+
