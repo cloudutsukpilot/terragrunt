@@ -33,31 +33,46 @@ before_script:
 validate:
   stage: validate
   script:
-    - cd $TF_WORKING_DIR
-    - terragrunt hclfmt # Ensure HCL formatting is correct
-    - terragrunt validate-all
+    - | 
+      terragrunt hclfmt # Ensure HCL formatting is correct
+      terragrunt validate-all
 
 init:
   stage: init
   script:
     - cd $TF_WORKING_DIR
-    - terragrunt run-all init
+    - | 
+      export ARM_CLIENT_ID=${ARM_CLIENT_ID}
+      export ARM_CLIENT_SECRET=${ARM_CLIENT_SECRET}
+      export ARM_TENANT_ID=${ARM_TENANT_ID}
+      export ARM_SUBSCRIPTION_ID=${ARM_SUBSCRIPTION_ID}
+      terragrunt run-all init
 
 plan:
   stage: plan
   script:
     - cd $TF_WORKING_DIR
-    - terragrunt run-all plan --terragrunt-out-dir /tmp/tfplan
+    - | 
+      export ARM_CLIENT_ID=${ARM_CLIENT_ID}
+      export ARM_CLIENT_SECRET=${ARM_CLIENT_SECRET}
+      export ARM_TENANT_ID=${ARM_TENANT_ID}
+      export ARM_SUBSCRIPTION_ID=${ARM_SUBSCRIPTION_ID}
+      terragrunt run-all plan --terragrunt-out-dir /tmp/tfplan
   artifacts:
     paths:
       - /tmp/tfplan
     when: always
 
+
 apply:
   stage: apply
   script:
     - cd $TF_WORKING_DIR
-    - terragrunt run-all apply --terragrunt-non-interactive --terragrunt-out-dir /tmp/tfplan
-  when: manual # Prevent automatic application
+    - | 
+      export ARM_CLIENT_ID=${ARM_CLIENT_ID}
+      export ARM_CLIENT_SECRET=${ARM_CLIENT_SECRET}
+      export ARM_TENANT_ID=${ARM_TENANT_ID}
+      export ARM_SUBSCRIPTION_ID=${ARM_SUBSCRIPTION_ID}
+      terragrunt run-all apply --terragrunt-non-interactive --terragrunt-out-dir /tmp/tfplan
   only:
     - main # Restrict apply to specific branches
