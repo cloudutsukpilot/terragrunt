@@ -29,13 +29,11 @@ env:
   AZURE_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
   AZURE_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
   AZURE_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-  ENV: ${{ github.event.inputs.ENV || 'dev' }}
   
 jobs:
   deploy-azure-infrastructure:
     name: Initialize Azure Infrastructure
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.ENV || 'dev' }}
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
@@ -104,15 +102,15 @@ jobs:
         sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
 
     # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Common - Terragrunt Format
-      id: common-format
+    - name: Terragrunt Format
+      id: format
       run: terragrunt hclfmt 
       continue-on-error: true
   
 
     # Initialize the Terragrunt working directory
-    - name: Common - Terragrunt Init
-      id: common-init
+    - name: Terragrunt Init
+      id: init
       env:
         ARM_CLIENT_ID: ${{ env.AZURE_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ env.AZURE_CLIENT_SECRET }}
@@ -122,8 +120,8 @@ jobs:
      
 
     # Plan the changes to the infrastructure
-    - name: Common - Terragrunt Plan
-      id: common-plan
+    - name: Terragrunt Plan
+      id: plan
       env:
         ARM_CLIENT_ID: ${{ env.AZURE_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ env.AZURE_CLIENT_SECRET }}
@@ -133,8 +131,8 @@ jobs:
  
 
     # Apply the changes to the infrastructure
-    - name: Common - Terragrunt Apply
-      id: common-apply
+    - name: Terragrunt Apply
+      id: apply
       env:
         ARM_CLIENT_ID: ${{ env.AZURE_CLIENT_ID }}
         ARM_CLIENT_SECRET: ${{ env.AZURE_CLIENT_SECRET }}
