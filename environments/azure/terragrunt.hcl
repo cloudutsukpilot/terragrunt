@@ -8,7 +8,7 @@ generate "provider" {
         required_providers {
             azurerm = {
             source  = "hashicorp/azurerm"
-            version = ">= 3.38.0"
+            version = ">= 4.7.0"
             }
         }
     }
