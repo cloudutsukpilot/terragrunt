@@ -33,7 +33,7 @@ env:
 jobs:
   deploy-azure-infrastructure:
     name: Initialize Azure Infrastructure
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
