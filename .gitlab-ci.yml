@@ -17,7 +17,7 @@ before_script:
   - apt-get update && apt-get install -y curl unzip bash
   # Install Terraform
   - echo "$TERRAFORM_VERSION"
-  - curl -fsSL https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_$TERRAFORM_VERSION_linux_amd64.zip -o terraform.zip
+  - curl -fsSL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform.zip
   - unzip terraform.zip -d /usr/local/bin/
   - rm terraform.zip
   # Install Terragrunt
