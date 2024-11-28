@@ -6,6 +6,11 @@ tasks:
     desc: "Terragrunt init"
     cmds:
       - terragrunt run-all init -reconfigure
+  
+  validate-all:
+    desc: "Terragrunt run-all validate"
+    cmds:
+      - terragrunt run-all validate
 
   plan-all:
     desc: "Terragrunt run-all plan"
@@ -21,6 +26,11 @@ tasks:
     desc: "Terragrunt run-all destroy"
     cmds:
       - terragrunt run-all destroy -auto-approve --terragrunt-non-interactive
+  
+  output-all:
+    desc: "Terragrunt run-all output"
+    cmds:
+      - terragrunt run-all output
 
   git-push:
     desc: Git Add, Commit and Push

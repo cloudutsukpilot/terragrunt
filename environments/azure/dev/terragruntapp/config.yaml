@@ -1,0 +1,24 @@
+resource_groups:
+  - name: dev-terragruntapp-rg-01
+    location: centralindia
+    resource_tags: 
+      Application: TerragruntApp
+  - name: dev-terragruntapp-rg-02
+    location: centralindia
+    resource_tags: 
+      Application: TerragruntApp
+storage_accounts:
+  - name: clddevrgtgapp01
+    resource_group_name: dev-terragruntapp-rg-01
+    location: centralindia
+    account_tier: Standard
+    account_replication_type: LRS
+    resource_tags:
+      Application: TerragruntApp
+  - name: clddevrgtgapp02
+    resource_group_name: dev-terragruntapp-rg-02
+    location: centralindia
+    account_tier: Standard
+    account_replication_type: LRS
+    resource_tags:
+      Application: TerragruntApp

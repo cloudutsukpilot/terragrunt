@@ -1,0 +1,24 @@
+resource_groups:
+  - name: dev-backstageapp-rg-01
+    location: centralindia
+    resource_tags: 
+      Application: BackstageApp
+  - name: dev-backstageapp-rg-02
+    location: centralindia
+    resource_tags: 
+      Application: BackstageApp
+storage_accounts:
+  - name: clddevrgbtapp01
+    resource_group_name: dev-backstageapp-rg-01
+    location: centralindia
+    account_tier: Standard
+    account_replication_type: LRS
+    resource_tags:
+      Application: BackstageApp
+  - name: clddevrgbtapp02
+    resource_group_name: dev-backstageapp-rg-02
+    location: centralindia
+    account_tier: Standard
+    account_replication_type: LRS
+    resource_tags:
+      Application: BackstageApp
