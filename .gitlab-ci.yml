@@ -1,73 +1,52 @@
-image: 
-    name: sonarsource/sonar-scanner-cli:latest
-    entrypoint: [""]
+stages:
+  - validate
+  - init
+  - plan
+  - apply
 
 variables:
-  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
-  GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task.
-  GITLAB_ENV: $CI_SERVER_HOST # To check if the pipeline is running on local Gitlab or Gitlab.com
+  TERRAGRUNT_VERSION: "0.69.2" # Update to your required Terragrunt version
+  TF_WORKING_DIR: "environments" # Update to your Terragrunt root directory
+  TERRAGRUNT_PLAN_FILE: "terragrunt-plan"
 
-stages:
-  - echo-host
-  - sonarcloud-check
-  - sonarqube-check
-#  - sonarqube-vulnerability-report
+before_script:
+  # Install dependencies (Terraform and Terragrunt)
+  - apk add --no-cache curl unzip bash
+  - curl -fsSL https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip -o terraform.zip
+  - unzip terraform.zip -d /usr/local/bin/
+  - rm terraform.zip
+  - curl -L https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64 -o /usr/local/bin/terragrunt
+  - chmod +x /usr/local/bin/terragrunt
+  - terragrunt --version
 
-echo-host:
-  stage: echo-host
-  image:
-    name: sonarsource/sonar-scanner-cli:latest
-    entrypoint: [""]
+validate:
+  stage: validate
   script:
-    - | 
-      echo "CI_SERVER_HOST: $CI_SERVER_HOST"
-      echo "GITLAB_ENV: $GITLAB_ENV"
+    - cd $TF_WORKING_DIR
+    - terragrunt hclfmt # Ensure HCL formatting is correct
+    - terragrunt validate-all
 
-sonarcloud-check:
-  stage: sonarcloud-check
-  image:
-    name: sonarsource/sonar-scanner-cli:latest
-    entrypoint: [""]
-  cache:
-    key: "${CI_JOB_NAME}"
-    paths:
-      - .sonar/cache
+init:
+  stage: init
   script:
-    - sonar-scanner
-  rules:
-    - if: '$CI_MERGE_REQUEST_ID'
-    - if: '$CI_COMMIT_BRANCH == "gitlabci"'
-    - if: '$CI_SERVER_HOST == "gitlab.com"'
+    - cd $TF_WORKING_DIR
+    - terragrunt run-all init
 
-sonarqube-check:
-  stage: sonarqube-check
-  cache:
-    policy: pull
-    key: "${CI_COMMIT_SHORT_SHA}"
+plan:
+  stage: plan
+  script:
+    - cd $TF_WORKING_DIR
+    - terragrunt run-all plan --terragrunt-out-dir /tmp/tfplan
+  artifacts:
     paths:
-      - sonar-scanner/
-      
-  script: 
-    - sonar-scanner
-      -Dsonar.projectKey=cloud-terraform \
-      -Dsonar.sources=java \
-      -Dsonar.host.url=http://localhost:9000 \
-      -Dsonar.login={{.SONAR_TOKEN}} 
-  allow_failure: true
-  rules:
-    - if: '$CI_SERVER_HOST != "gitlab.com"'
+      - /tmp/tfplan
+    when: always
 
-# sonarqube-vulnerability-report:
-#   stage: sonarqube-vulnerability-report
-#   script:
-#     - 'curl -u "${SONAR_TOKEN}:" "${SONAR_HOST_URL}/api/issues/gitlab_sast_export?projectKey=sakharamgit_cloud_e8779eef-0f88-4494-9cdc-26ce6bf35db4&branch=${CI_COMMIT_BRANCH}&pullRequest=${CI_MERGE_REQUEST_IID}" -o gl-sast-sonar-report.json'
-#   allow_failure: true
-#   rules:
-#     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-#     - if: $CI_COMMIT_BRANCH == 'master'
-#     - if: $CI_COMMIT_BRANCH == 'main'
-#     - if: $CI_COMMIT_BRANCH == 'develop'
-#   artifacts:
-#     expire_in: 1 day
-#     reports:
-#       sast: gl-sast-sonar-report.json
+apply:
+  stage: apply
+  script:
+    - cd $TF_WORKING_DIR
+    - terragrunt run-all apply --terragrunt-non-interactive --terragrunt-out-dir /tmp/tfplan
+  when: manual # Prevent automatic application
+  only:
+    - main # Restrict apply to specific branches
