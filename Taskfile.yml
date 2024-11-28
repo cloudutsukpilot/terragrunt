@@ -38,5 +38,6 @@ tasks:
       - git status
       - git add .
       - git commit -m "{{.CLI_ARGS}}"
-      - git push    
+      - git push origin main  
+      - git push github main
     
