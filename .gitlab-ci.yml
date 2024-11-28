@@ -8,7 +8,7 @@ stages:
 
 variables:
   TERRAGRUNT_VERSION: "0.69.2" # Update to your required Terragrunt version
-  TERRAFORM_VERSION: v1.10.0
+  TERRAFORM_VERSION: v1.9.4
   TF_WORKING_DIR: "environments" # Update to your Terragrunt root directory
   TERRAGRUNT_PLAN_FILE: "terragrunt-plan"
 
