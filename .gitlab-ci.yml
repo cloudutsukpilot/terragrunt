@@ -1,73 +1,68 @@
 image: ruby:3.1
 
 stages:
-  - validate
-  - init
-  - plan
-  - apply
+  - deploy
 
-variables:
-  TERRAGRUNT_VERSION: "0.69.2" # Update to your required Terragrunt version
-  TERRAFORM_VERSION: 1.9.8
-  TF_WORKING_DIR: "environments" # Update to your Terragrunt root directory
-  TERRAGRUNT_PLAN_FILE: "terragrunt-plan"
-
-before_script:
-  # Install necessary tools for Terraform and Terragrunt
-  - apt-get update && apt-get install -y curl unzip bash
-  - curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-  - echo "Installed Azure CLI:"
-  - az version
-  # Install Terraform
-  - echo "$TERRAFORM_VERSION"
-  - curl -fsSL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform.zip
-  - unzip terraform.zip -d /usr/local/bin/
-  - rm terraform.zip
-  # Install Terragrunt
-  - curl -L https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64 -o /usr/local/bin/terragrunt
-  - chmod +x /usr/local/bin/terragrunt
-  # Verify installations
-  - terraform --version
-  - terragrunt --version
-
-validate:
+deploy:
+  stage: deploy
   script:
-    - | 
-      terragrunt hclfmt # Ensure HCL formatting is correct
-      terragrunt validate-all
+    # Update packages and install dependencies
+    - apt-get update && apt-get install -y curl unzip bash apt-transport-https ca-certificates gnupg lsb-release
 
-init:
-  script:
-    - cd $TF_WORKING_DIR
-    - | 
-      export ARM_CLIENT_ID=${ARM_CLIENT_ID}
-      export ARM_CLIENT_SECRET=${ARM_CLIENT_SECRET}
-      export ARM_TENANT_ID=${ARM_TENANT_ID}
-      export ARM_SUBSCRIPTION_ID=${ARM_SUBSCRIPTION_ID}
-      terragrunt run-all init
+    # Install Azure CLI
+    - curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+    - echo "Installed Azure CLI:"
+    - az version
 
-plan:
-  script:
-    - cd $TF_WORKING_DIR
-    - | 
-      export ARM_CLIENT_ID=${ARM_CLIENT_ID}
-      export ARM_CLIENT_SECRET=${ARM_CLIENT_SECRET}
-      export ARM_TENANT_ID=${ARM_TENANT_ID}
-      export ARM_SUBSCRIPTION_ID=${ARM_SUBSCRIPTION_ID}
-      terragrunt run-all plan --terragrunt-out-dir /tmp/tfplan
-  artifacts:
-    paths:
-      - /tmp/tfplan
-    when: always
+    # Print Terraform version
+    - echo "Terraform version to be installed: ${TERRAFORM_VERSION}"
+    
+    # Install Terraform
+    - |
+      if [ ! -f /usr/local/bin/terraform ]; then
+        if curl -fsSL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform.zip; then
+          echo "Downloaded Terraform ${TERRAFORM_VERSION}"
+          unzip terraform.zip -d /usr/local/bin/
+          rm terraform.zip
+        else
+          echo "Error: Terraform version ${TERRAFORM_VERSION} not found." && exit 1
+        fi
+      else
+        echo "Terraform already installed."
+      fi
 
+    # Print Terragrunt version
+    - echo "Terragrunt version to be installed: ${TERRAGRUNT_VERSION}"
+    
+    # Install Terragrunt
+    - |
+      if [ ! -f /usr/local/bin/terragrunt ]; then
+        if curl -L https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64 -o /usr/local/bin/terragrunt; then
+          echo "Downloaded Terragrunt ${TERRAGRUNT_VERSION}"
+          chmod +x /usr/local/bin/terragrunt
+        else
+          echo "Error: Terragrunt version ${TERRAGRUNT_VERSION} not found." && exit 1
+        fi
+      else
+        echo "Terragrunt already installed."
+      fi
 
-apply:
-  script:
-    - cd $TF_WORKING_DIR
-    - | 
-      export ARM_CLIENT_ID=${ARM_CLIENT_ID}
-      export ARM_CLIENT_SECRET=${ARM_CLIENT_SECRET}
-      export ARM_TENANT_ID=${ARM_TENANT_ID}
-      export ARM_SUBSCRIPTION_ID=${ARM_SUBSCRIPTION_ID}
-      terragrunt run-all apply --terragrunt-non-interactive --terragrunt-out-dir /tmp/tfplan
+    # Verify installations
+    - terraform --version || exit 1
+    - terragrunt --version || exit 1
+    - az --version || exit 1
 
+    # Set Azure environment variables for Terraform
+    - export ARM_CLIENT_ID=${ARM_CLIENT_ID}
+    - export ARM_CLIENT_SECRET=${ARM_CLIENT_SECRET}
+    - export ARM_TENANT_ID=${ARM_TENANT_ID}
+    - export ARM_SUBSCRIPTION_ID=${ARM_SUBSCRIPTION_ID}
+
+    # Format the Terraform code (Optional)
+    - terragrunt hclfmt
+
+    # Run Terragrunt Plan
+    - terragrunt run-all plan --terragrunt-out-dir /tmp/tf1plan
+
+    # Apply the changes to the infrastructure
+    - terragrunt run-all apply -auto-approve --terragrunt-non-interactive --terragrunt-out-dir /tmp/tf1plan
