@@ -1,0 +1,5 @@
+resource_groups:
+  - name: demo-tg-dev-rg-01
+    location: centralindia
+    resource_tags: 
+      resource_type: rg

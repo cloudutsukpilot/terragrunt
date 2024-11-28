@@ -13,6 +13,6 @@ terraform {
 
 inputs = {
   storage_account_name  = "cldprodstorageacct"
-  resource_group_name   = dependency.resource_group.outputs.resource_group_name
+  resource_group_name   = dependency.resource_group.outputs.name
   location              = "centralindia"
 }
