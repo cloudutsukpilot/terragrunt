@@ -8,17 +8,22 @@ stages:
 
 variables:
   TERRAGRUNT_VERSION: "0.69.2" # Update to your required Terragrunt version
+  TERRAFORM_VERSION: v1.10.0
   TF_WORKING_DIR: "environments" # Update to your Terragrunt root directory
   TERRAGRUNT_PLAN_FILE: "terragrunt-plan"
 
 before_script:
   # Install necessary tools for Terraform and Terragrunt
   - apt-get update && apt-get install -y curl unzip bash
-  - curl -fsSL https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip -o terraform.zip
+  # Install Terraform
+  - curl -fsSL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -o terraform.zip
   - unzip terraform.zip -d /usr/local/bin/
   - rm terraform.zip
-  - curl -L https://github.com/gruntwork-io/terragrunt/releases/download/v0.50.0/terragrunt_linux_amd64 -o /usr/local/bin/terragrunt
+  # Install Terragrunt
+  - curl -L https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64 -o /usr/local/bin/terragrunt
   - chmod +x /usr/local/bin/terragrunt
+  # Verify installations
+  - terraform --version
   - terragrunt --version
 
 validate:
